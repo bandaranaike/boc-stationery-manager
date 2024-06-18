@@ -1,0 +1,19 @@
+.
+├── next.config.mjs
+├── next-env.d.ts
+├── package.json
+├── package-lock.json
+├── postcss.config.mjs
+├── public
+│   ├── next.svg
+│   └── vercel.svg
+├── README.md
+├── src
+│   └── pages
+│   └── app
+│       ├── favicon.ico
+│       ├── globals.css
+│       ├── layout.tsx
+│       └── page.tsx
+├── tailwind.config.ts
+└── tsconfig.json
