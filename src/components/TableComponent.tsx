@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 
 interface Item {
     id: number;
@@ -18,7 +18,11 @@ interface Stock {
     initial_stock: number;
 }
 
-const TableComponent = () => {
+interface TableComponentProps {
+    reload: boolean;
+}
+
+const TableComponent: React.FC<TableComponentProps> = ({reload}) => {
     const [expandedRows, setExpandedRows] = useState<Record<number, boolean>>({});
     const [items, setItems] = useState<Item[]>([]);
     const [stocks, setStocks] = useState<Record<number, Stock[]>>({});
@@ -39,7 +43,7 @@ const TableComponent = () => {
             }
         };
         fetchItems();
-    }, []);
+    }, [reload]);
 
     const handleRowClick = async (itemId: number) => {
         setExpandedRows(prevState => ({
@@ -101,8 +105,10 @@ const TableComponent = () => {
                             <tr className="bg-gray-50 dark:bg-gray-900">
                                 <td colSpan={6} className="p-2">
                                     <div className="relative overflow-x-auto shadow-md sm:rounded">
-                                        <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                                            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                        <table
+                                            className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                            <thead
+                                                className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                             <tr>
                                                 <th scope="col" className="px-6 py-3">Date</th>
                                                 <th scope="col" className="px-6 py-3">Unit Price</th>
@@ -112,7 +118,8 @@ const TableComponent = () => {
                                             </thead>
                                             <tbody>
                                             {stocks[item.id].map(stock => (
-                                                <tr key={stock.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                                <tr key={stock.id}
+                                                    className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                                                     <td className="px-6 py-4">{stock.date}</td>
                                                     <td className="px-6 py-4">{stock.unit_price}</td>
                                                     <td className="px-6 py-4">{stock.stock}</td>

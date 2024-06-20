@@ -1,4 +1,8 @@
 .
+├── database
+│   ├── migration.sql
+│   └── stationery_stock.db
+├── InitialDirectoryTree.txt
 ├── next.config.mjs
 ├── next-env.d.ts
 ├── package.json
@@ -8,12 +12,29 @@
 │   ├── next.svg
 │   └── vercel.svg
 ├── README.md
+├── Requirement.txt
 ├── src
+│   ├── app
+│   │   ├── favicon.ico
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   └── page.tsx
+│   ├── components
+│   │   ├── AddItemModal.tsx
+│   │   ├── AddStockModal.tsx
+│   │   └── TableComponent.tsx
 │   └── pages
-│   └── app
-│       ├── favicon.ico
-│       ├── globals.css
-│       ├── layout.tsx
-│       └── page.tsx
+│       ├── api
+│       │   ├── add-stock.ts
+│       │   ├── database.ts
+│       │   ├── items-search.ts
+│       │   ├── items.ts
+│       │   ├── openDb.ts
+│       │   └── stocks.ts
+│       ├── backup.tsx
+│       ├── BranchManagement.tsx
+│       ├── InvoiceManagement.tsx
+│       ├── Settings.tsx
+│       └── StockManagement.tsx
 ├── tailwind.config.ts
 └── tsconfig.json

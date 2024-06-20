@@ -16,6 +16,10 @@ Technologies :
 
 Folder structure:
 .
+├── database
+│   ├── migration.sql
+│   └── stationery_stock.db
+├── InitialDirectoryTree.txt
 ├── next.config.mjs
 ├── next-env.d.ts
 ├── package.json
@@ -25,20 +29,37 @@ Folder structure:
 │   ├── next.svg
 │   └── vercel.svg
 ├── README.md
+├── Requirement.txt
 ├── src
+│   ├── app
+│   │   ├── favicon.ico
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   └── page.tsx
+│   ├── components
+│   │   ├── AddItemModal.tsx
+│   │   ├── AddStockModal.tsx
+│   │   └── TableComponent.tsx
 │   └── pages
-│   └── app
-│       ├── favicon.ico
-│       ├── globals.css
-│       ├── layout.tsx
-│       └── page.tsx
+│       ├── api
+│       │   ├── add-stock.ts
+│       │   ├── database.ts
+│       │   ├── items-search.ts
+│       │   ├── items.ts
+│       │   ├── openDb.ts
+│       │   └── stocks.ts
+│       ├── backup.tsx
+│       ├── BranchManagement.tsx
+│       ├── InvoiceManagement.tsx
+│       ├── Settings.tsx
+│       └── StockManagement.tsx
 ├── tailwind.config.ts
 └── tsconfig.json
 
 
 The SQLite database structure is as follows:
 
-    The stationary_stock.db file contains three tables: items, stocks, and branches.
+    The stationery_stock.db file contains three tables: items, stocks, and branches.
     The items table includes columns for id, code, name, total_value, total_stock, reorder_level, and status.
     The stocks table includes columns for id, item_id, date, unit_price, stock, initial_stock, with a foreign key reference to the items table.
     The branches table includes columns for id, name, code.
