@@ -19,7 +19,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({onItemAdded}) => {
         setIsOpen(true);
     }
 
-    const onSubmit = async (data) => {
+    const onSubmit = async (data: object) => {
         try {
             const response = await axios.post('/api/add-item', data);
             if (response.data.success) {
