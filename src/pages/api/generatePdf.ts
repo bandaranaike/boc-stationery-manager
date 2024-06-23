@@ -40,7 +40,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         const grandTotal = items.reduce((sum: number, item: any) => sum + item.total_value, 0);
         // @ts-ignore
-        doc.text(`Grand Total: ${grandTotal.toFixed(2)}`, 163, doc.autoTable.previous.finalY + 10);
+        doc.text(`Grand Total: ${grandTotal.toFixed(2)}`, 154, doc.autoTable.previous.finalY + 10);
         // @ts-ignore
         doc.text('..............................', 10, doc.autoTable.previous.finalY + 40);
         // @ts-ignore
