@@ -41,7 +41,6 @@ const updateStocksAndItemTotals = async (req: NextApiRequest, res: NextApiRespon
             try {
                 for (const item of items) {
                     for (const stock of item.stocks) {
-                        console.log("running one id : ", stock.id);
                         await db.run('UPDATE stocks SET stock = stock - ? WHERE id = ?', [stock.stock, stock.id]);
                     }
                 }

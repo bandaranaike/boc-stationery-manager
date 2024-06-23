@@ -19,12 +19,12 @@ export async function addStockToDatabase({item, unit_price, quantity}: {
     return result;
 }
 
-export async function addItemToDatabase(name: string, code: string) {
+export async function addItemToDatabase(name: string, code: string, reorder_level: number) {
     const db = await openDB();
 
     const result = await db.run(
-        'INSERT INTO items (name, code) VALUES (?, ?)',
-        [name, code]
+        'INSERT INTO items (name, code, reorder_level) VALUES (?, ?, ?)',
+        [name, code, reorder_level]
     );
 
     await db.close();

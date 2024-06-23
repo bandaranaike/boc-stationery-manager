@@ -2,13 +2,22 @@ import React, {useState, Fragment} from 'react';
 import {Dialog, Transition} from '@headlessui/react';
 import {useForm} from 'react-hook-form';
 import axios from 'axios';
+import {Item} from "@/types";
 
-interface AddItemModalProps {
-    onItemAdded: () => void;
+interface EditItemModalProps {
+    onItemEdited: () => void;
+    item: Item;
 }
 
-const AddItemModal: React.FC<AddItemModalProps> = ({onItemAdded}) => {
-    const {register, handleSubmit, reset} = useForm();
+const EditItemModal: React.FC<EditItemModalProps> = ({onItemEdited, item}) => {
+    const {register, handleSubmit, reset} = useForm({
+        defaultValues: {
+            id: item.id,
+            name: item.name,
+            code: item.code,
+            reorder_level: item.reorder_level
+        }
+    });
     const [isOpen, setIsOpen] = useState(false);
 
     function closeModal() {
@@ -21,16 +30,16 @@ const AddItemModal: React.FC<AddItemModalProps> = ({onItemAdded}) => {
 
     const onSubmit = async (data: object) => {
         try {
-            const response = await axios.post('/api/addItem', data);
+            const response = await axios.put('/api/items', data);
             if (response.data.success) {
                 reset();
                 closeModal();
-                onItemAdded();
+                onItemEdited();
             } else {
-                console.error('Failed to add item:', response.data.error);
+                console.error('Failed to edit item:', response.data.error);
             }
         } catch (error) {
-            console.error('An error occurred while adding item:', error);
+            console.error('An error occurred while editing item:', error);
         }
     };
 
@@ -38,10 +47,10 @@ const AddItemModal: React.FC<AddItemModalProps> = ({onItemAdded}) => {
         <>
             <button
                 onClick={openModal}
-                className="block ml-2 py-3 text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded text-sm px-5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                className="font-medium text-gray-600 dark:text-gray-400 hover:underline"
                 type="button"
             >
-                Add item
+                Edit
             </button>
 
             <Transition appear show={isOpen} as={Fragment}>
@@ -74,7 +83,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({onItemAdded}) => {
                                 <div className="flex justify-between items-center">
                                     <Dialog.Title as="h3"
                                                   className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-50">
-                                        Add new item
+                                        Edit item
                                     </Dialog.Title>
                                     <button
                                         type="button"
@@ -86,13 +95,14 @@ const AddItemModal: React.FC<AddItemModalProps> = ({onItemAdded}) => {
                                 </div>
                                 <div className="mt-2">
                                     <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+                                        <input type="hidden" {...register('id')} value={item.id}/>
                                         <div>
                                             <label htmlFor="name"
                                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                                                 Item name
                                             </label>
                                             <input {...register('name')} id="name"
-                                                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                                                    required/>
                                         </div>
                                         <div>
@@ -101,21 +111,22 @@ const AddItemModal: React.FC<AddItemModalProps> = ({onItemAdded}) => {
                                                 Item code
                                             </label>
                                             <input {...register('code')} id="code"
-                                                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                                                    required/>
                                         </div>
                                         <div>
                                             <label htmlFor="reorder_level"
                                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                                                Reorder Level
+                                                Reorder level
                                             </label>
                                             <input {...register('reorder_level')} id="reorder_level"
-                                                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                                   type="number"
+                                                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                                                    required/>
                                         </div>
                                         <button type="submit"
-                                                className="w-full text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded text-sm px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
-                                            Add item
+                                                className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                            Update item
                                         </button>
                                     </form>
                                 </div>
@@ -128,4 +139,4 @@ const AddItemModal: React.FC<AddItemModalProps> = ({onItemAdded}) => {
     );
 };
 
-export default AddItemModal;
+export default EditItemModal;

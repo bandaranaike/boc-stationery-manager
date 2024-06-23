@@ -20,6 +20,9 @@ export interface DeleteBranchModalProps extends ModalProps {
     onDelete: () => void;
 }
 
+export interface DeleteItemModalProps extends DeleteBranchModalProps {
+}
+
 export interface ModalProps {
     isOpen: boolean;
     closeModal: () => void;
@@ -45,5 +48,6 @@ export interface Item {
     name: string;
     quantity?: number;
     total_value?: number;
+    reorder_level?: number;
     stocks?: Stock[];
 }

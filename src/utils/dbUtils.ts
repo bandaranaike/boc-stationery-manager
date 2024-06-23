@@ -20,7 +20,17 @@ export async function updateItemTotals(itemId: number): Promise<{ totalValue: nu
         `, [itemId]);
 
         // Update the items table with the new totals
-        await db.run('UPDATE items SET total_value = ?, total_stock = ? WHERE id = ?', [result.totalValue, result.totalStock, itemId]);
+        await db.run(
+            `UPDATE items
+             SET total_value = ?,
+                 total_stock = ?,
+                 status      = CASE
+                                   WHEN total_stock > reorder_level THEN 'active'
+                                   ELSE 'order'
+                     END
+             WHERE id = ?`,
+            [result.totalValue, result.totalStock, itemId]
+        );
 
         return { totalValue: result.totalValue, totalStock: result.totalStock };
     } catch (error) {

@@ -9,7 +9,25 @@
     "start": "next start",
     "lint": "next lint",
     "electron-dev": "concurrently \"npm run dev\" \"wait-on http://localhost:3000 && electron .\"",
-    "electron-pack": "next build && electron-packager . boc-stationery-manager --platform=win32 --arch=x64 --out=dist --overwrite"
+    "electron-pack": "next build && electron-packager . boc-stationery-manager --platform=win32 --arch=x64 --out=dist --overwrite --ignore=node_modules --ignore=dist"
+  },
+  "build": {
+    "appId": "com.eranda.bocstationerymanager",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "dist/**/*",
+      "database/**/*",
+      "main.js",
+      "preload.js",
+      "public/**/*",
+      "src/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis"
+    }
   },
   "dependencies": {
     "@headlessui/react": "^2.0.4",
@@ -34,6 +52,7 @@
     "@types/react-dom": "^18",
     "concurrently": "^6.5.1",
     "electron": "^13.6.9",
+    "electron-builder": "^24.13.3",
     "electron-packager": "^15.5.2",
     "eslint": "^8",
     "eslint-config-next": "14.2.4",

@@ -1,9 +1,17 @@
 .
 ├── database
 │   ├── migration.sql
-│   └── stationery_stock.db
+│   ├── stationery_stock.db
+│   ├── stationery_stock.db-shm
+│   └── stationery_stock.db-wal
 ├── InitialDirectoryTree.txt
 ├── invoices
+│   ├── 002
+│   │   └── 2024-06-23-1719154030455.pdf
+│   ├── 029
+│   │   └── 2024-06-23-1719154522962.pdf
+│   └── reports
+│       └── 2024-06-23-18-07-39.pdf
 ├── main.js
 ├── next.config.mjs
 ├── next-env.d.ts
@@ -30,7 +38,9 @@
 │   │   ├── BranchSelector.tsx
 │   │   ├── BranchTable.tsx
 │   │   ├── DeleteBranchModal.tsx
+│   │   ├── DeleteItemModal.tsx
 │   │   ├── EditBranchModal.tsx
+│   │   ├── EditItemModal.tsx
 │   │   ├── ItemTable.tsx
 │   │   ├── SearchableDropdown.tsx
 │   │   └── TableComponent.tsx
@@ -44,7 +54,11 @@
 │   │   │   ├── generateReport.ts
 │   │   │   ├── itemsSearch.ts
 │   │   │   ├── items.ts
+│   │   │   ├── saveSettings.ts
+│   │   │   ├── settings.ts
 │   │   │   ├── stocks.ts
+│   │   │   ├── triggerUpdateItems.ts
+│   │   │   ├── updateItemsStockDetails.ts
 │   │   │   └── updateStocks.ts
 │   │   ├── backup.tsx
 │   │   ├── BranchManagement.tsx
@@ -52,6 +66,7 @@
 │   │   ├── Settings.tsx
 │   │   └── StockManagement.tsx
 │   ├── types
+│   │   └── electron.d.ts
 │   ├── types.ts
 │   └── utils
 │       ├── dateUtils.ts

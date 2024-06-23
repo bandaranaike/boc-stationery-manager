@@ -11,7 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         // Query the database for items matching the search text and with total_stock greater than the availability threshold
         const items = await db.all(
-            'SELECT id, code, name FROM items WHERE (code LIKE ? OR name LIKE ?) AND total_stock >= ? LIMIT 20',
+            'SELECT id, code, name FROM items WHERE (code LIKE ? OR name LIKE ?) AND (total_stock >= ?) LIMIT 20',
             [`%${text}%`, `%${text}%`, availabilityNumber]
         );
 

@@ -4,8 +4,8 @@ import {addItemToDatabase, addStockToDatabase} from './database';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'POST') {
         try {
-            const {name, code} = req.body;
-            const result = await addItemToDatabase(name, code);
+            const {name, code, reorder_level} = req.body;
+            const result = await addItemToDatabase(name, code, reorder_level);
             res.status(200).json({success: true, data: result});
         } catch (error: unknown) {
             if (error instanceof Error) {
