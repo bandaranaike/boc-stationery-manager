@@ -23,8 +23,10 @@
       "preload.js",
       "public/**/*",
       "src/**/*",
-      "package.json"
+      "package.json",
+      "node_modules/**/*"
     ],
+    "asar": true,
     "win": {
       "target": "nsis"
     }
@@ -47,13 +49,13 @@
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
+    "@electron/packager": "^18.3.3",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "concurrently": "^6.5.1",
     "electron": "^13.6.9",
     "electron-builder": "^24.13.3",
-    "electron-packager": "^15.5.2",
     "eslint": "^8",
     "eslint-config-next": "14.2.4",
     "postcss": "^8",
