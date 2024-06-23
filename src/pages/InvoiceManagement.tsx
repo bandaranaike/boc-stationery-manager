@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import BranchSelector from '../components/BranchSelector';
 import ItemTable from '../components/ItemTable';
 import AddItemForm from '../components/AddItemForm';
-import { DropdownOption, Item, Stock } from "@/types";
+import {DropdownOption, Item, Stock} from "@/types";
 
 const InvoiceManagement: React.FC = () => {
     const [items, setItems] = useState<Item[]>([]);
@@ -33,6 +33,9 @@ const InvoiceManagement: React.FC = () => {
         const fetchedItems = response.data.map((item: any) => ({
             label: `${item.code} - ${item.name}`,
             value: item.id,
+            id: item.id,
+            code: item.name,
+            name: item.name
         }));
         setAvailableItems(fetchedItems);
     };

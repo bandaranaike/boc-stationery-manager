@@ -79,8 +79,8 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ availableItems, onAdd, fetchI
                     <SearchableDropdown
                         options={availableItems}
                         onChangeHandler={(selected) => {
-                            const item = availableItems.find(item => item.value === selected?.value);
-                            setSelectedItem(item ? { id: item.value, code: item.code!, name: item.name! } : null);
+                            const item = availableItems.find(option => option.value === selected?.value);
+                            setSelectedItem(item ? { id: item.id, code: item.code, name: item.name } : null);
                         }}
                         onInputChangeHandler={handleSearch}
                         value={selectedItem ? {

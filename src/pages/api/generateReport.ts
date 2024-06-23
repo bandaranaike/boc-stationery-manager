@@ -50,7 +50,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // @ts-ignore
         doc.text(`Stock total value: ${totalValue.toFixed(2)}`, 140, doc.autoTable.previous.finalY + 10);
 
-        const directoryPath = path.join('/home/eranda/Documents/flutter/invoices', 'reports');
+        const directoryPath = path.join(process.cwd(), 'invoices', 'reports');
 
         // Ensure the directory exists
         fs.mkdirSync(directoryPath, { recursive: true });

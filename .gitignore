@@ -37,3 +37,4 @@ next-env.d.ts
 .idea/
 database/stationery_stock.db
 dist/
+invoices/
