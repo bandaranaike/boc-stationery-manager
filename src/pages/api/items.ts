@@ -1,5 +1,5 @@
 import {NextApiRequest, NextApiResponse} from 'next';
-import openDb from './openDb'
+import openDb from '../../utils/openDb'
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
     try {

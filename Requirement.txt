@@ -44,7 +44,7 @@ Folder structure:
 │       ├── api
 │       │   ├── add-stock.ts
 │       │   ├── database.ts
-│       │   ├── items-search.ts
+│       │   ├── itemsSearch.ts
 │       │   ├── items.ts
 │       │   ├── openDb.ts
 │       │   └── stocks.ts

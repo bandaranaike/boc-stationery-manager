@@ -21,7 +21,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({onItemAdded}) => {
 
     const onSubmit = async (data: object) => {
         try {
-            const response = await axios.post('/api/add-item', data);
+            const response = await axios.post('/api/addItem', data);
             if (response.data.success) {
                 reset();
                 closeModal();

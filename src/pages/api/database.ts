@@ -1,4 +1,5 @@
-import openDB from './openDb';
+import openDB from '../../utils/openDb';
+import {updateItemTotals} from "@/utils/dbUtils";
 
 export async function addStockToDatabase({item, unit_price, quantity}: {
     item: number,
@@ -11,6 +12,8 @@ export async function addStockToDatabase({item, unit_price, quantity}: {
         'INSERT INTO stocks (item_id, date, unit_price, stock, initial_stock) VALUES (?, ?, ?, ?, ?)',
         [item, new Date().toISOString().split('T')[0], unit_price, quantity, quantity]
     );
+
+    await updateItemTotals(item);
 
     await db.close();
     return result;

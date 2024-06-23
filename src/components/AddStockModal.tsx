@@ -1,15 +1,36 @@
-import React, {useState, useEffect, Fragment} from 'react';
+import React, {useState, Fragment, useEffect} from 'react';
 import {Dialog, Transition} from '@headlessui/react';
-import {useForm} from 'react-hook-form';
+import {useForm, SubmitHandler} from 'react-hook-form';
 import axios from 'axios';
-import Select from 'react-select';
 import SearchableDropdown from "@/components/SearchableDropdown";
 
+interface Item {
+    id: number;
+    code: string;
+    name: string;
+}
+
+interface FormData {
+    item: number;
+    unit_price: number;
+    quantity: number;
+}
+
+interface DropdownOption {
+    value: number;
+    label: string;
+}
+
 const AddStockModal: React.FC = () => {
-    const {register, handleSubmit, reset, setValue} = useForm();
+    const {register, handleSubmit, reset, setValue} = useForm<FormData>();
     const [isOpen, setIsOpen] = useState(false);
-    const [items, setItems] = useState([]);
+    const [items, setItems] = useState<Item[]>([]);
     const [loading, setLoading] = useState(false);
+    const [selectedItem, setSelectedItem] = useState<DropdownOption | null>(null);
+
+    useEffect(() => {
+        fetchItems('');
+    }, []);
 
     function closeModal() {
         setIsOpen(false);
@@ -21,7 +42,7 @@ const AddStockModal: React.FC = () => {
 
     const fetchItems = async (inputValue: string) => {
         setLoading(true);
-        const response = await axios.get(`/api/items-search?text=${inputValue}`);
+        const response = await axios.get(`/api/itemsSearch?text=${inputValue}`);
         setItems(response.data);
         setLoading(false);
     };
@@ -30,15 +51,19 @@ const AddStockModal: React.FC = () => {
         fetchItems(inputValue);
     };
 
-    const handleSelectChange = (selectedOption) => {
-        setValue('item', selectedOption.value);
+    const handleSelectChange = (selectedOption: DropdownOption | null) => {
+        if (selectedOption) {
+            setValue('item', selectedOption.value);
+            setSelectedItem(selectedOption);
+        }
     };
 
-    const onSubmit = async (data) => {
+    const onSubmit: SubmitHandler<FormData> = async (data) => {
         try {
-            const response = await axios.post('/api/add-stock', data);
+            const response = await axios.post('/api/addStock', data);
             if (response.data.success) {
                 reset();
+                setSelectedItem(null);
                 closeModal();
             } else {
                 console.error('Failed to add stock:', response.data.error);
@@ -52,7 +77,7 @@ const AddStockModal: React.FC = () => {
         <>
             <button
                 onClick={openModal}
-                className="block ml-2 py-3 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded text-sm px-5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                className="block ml-2 py-3 text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded text-sm px-5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
                 type="button"
             >
                 Add stock
@@ -101,35 +126,41 @@ const AddStockModal: React.FC = () => {
                                     <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
                                         <div className="bg-white dark:bg-gray-800">
                                             <label htmlFor="item"
-                                                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Item</label>
+                                                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                                Item
+                                            </label>
                                             <SearchableDropdown
                                                 options={items.map(item => ({
                                                     value: item.id,
                                                     label: `${item.code} - ${item.name}`
                                                 }))}
                                                 onChangeHandler={handleSelectChange}
-                                                onInputChangeHandler={handleInputChange}>
-                                            </SearchableDropdown>
+                                                onInputChangeHandler={handleInputChange}
+                                                value={selectedItem}
+                                            />
                                         </div>
 
                                         <div>
                                             <label htmlFor="unit_price"
-                                                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Unit
-                                                price</label>
+                                                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                                Unit price
+                                            </label>
                                             <input {...register('unit_price')} id="unit_price"
                                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                                                    required/>
                                         </div>
                                         <div>
                                             <label htmlFor="quantity"
-                                                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Quantity</label>
+                                                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                                Quantity
+                                            </label>
                                             <input {...register('quantity')} id="quantity"
                                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white mb-3"
                                                    required/>
                                         </div>
                                         <button type="submit"
-                                                className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Add
-                                            stock
+                                                className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                            Add stock
                                         </button>
                                     </form>
                                 </div>

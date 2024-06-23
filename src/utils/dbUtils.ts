@@ -1,0 +1,48 @@
+import openDb from './openDb';
+
+export async function updateItemTotals(itemId: number): Promise<{ totalValue: number; totalStock: number; }> {
+    try {
+        if (!itemId) {
+            throw new Error('Item ID is required');
+        }
+
+        const db = await openDb();
+
+        // Calculate total value and total stock in a single query using aggregation
+        const result = await db.get(`
+            SELECT
+                SUM(stocks.unit_price * stocks.stock) AS totalValue,
+                SUM(stocks.stock) AS totalStock
+            FROM
+                stocks
+            WHERE
+                stocks.item_id = ?
+        `, [itemId]);
+
+        // Update the items table with the new totals
+        await db.run('UPDATE items SET total_value = ?, total_stock = ? WHERE id = ?', [result.totalValue, result.totalStock, itemId]);
+
+        return { totalValue: result.totalValue, totalStock: result.totalStock };
+    } catch (error) {
+        console.error(error);
+        throw new Error('Internal Server Error');
+    }
+}
+
+export async function removeEmptyStocks(itemId: number): Promise<void> {
+    try {
+        if (!itemId) {
+            throw new Error('Item ID is required');
+        }
+
+        const db = await openDb();
+
+        // Delete stocks with zero quantity for the given itemId
+        await db.run('DELETE FROM stocks WHERE item_id = ? AND stock = 0', [itemId]);
+
+        console.log(`Empty stocks removed for item ID: ${itemId}`);
+    } catch (error) {
+        console.error(error);
+        throw new Error('Internal Server Error');
+    }
+}

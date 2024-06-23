@@ -1,31 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import SearchableDropdown from '@/components/SearchableDropdown';
 import axios from 'axios';
-
-interface Stock {
-    id: number;
-    item_id: number;
-    date: string;
-    unit_price: number;
-    stock: number;
-    initial_stock: number;
-}
-
-interface Item {
-    id: number;
-    code: string;
-    name: string;
-}
+import { DropdownOption, Item, Stock } from '@/types';
 
 interface AddItemFormProps {
-    availableItems: Item[];
+    availableItems: DropdownOption[];
     onAdd: (item: Item, quantity: number, stocks: Stock[]) => void;
     fetchItems: (inputValue: string) => void;
 }
 
 const AddItemForm: React.FC<AddItemFormProps> = ({ availableItems, onAdd, fetchItems }) => {
     const [selectedItem, setSelectedItem] = useState<Item | null>(null);
-    const [quantity, setQuantity] = useState<number>(0);
+    const [quantity, setQuantity] = useState<number>(1);
     const [stocks, setStocks] = useState<Stock[]>([]);
     const [error, setError] = useState<string | null>(null);
 
@@ -38,39 +24,47 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ availableItems, onAdd, fetchI
     const fetchStocks = async (itemId: number) => {
         try {
             const response = await axios.get(`/api/stocks?itemId=${itemId}`);
-            setStocks(response.data);
+            setStocks(response.data.sort((a: Stock, b: Stock) => new Date(a.date).getTime() - new Date(b.date).getTime()));
         } catch (error) {
             console.error('Error fetching stocks:', error);
         }
     };
 
     const handleAddItem = () => {
-        let remainingQuantity = quantity;
-        let selectedStocks: Stock[] = [];
+        if (!selectedItem) {
+            setError("Please select an item");
+        } else {
+            let remainingQuantity = quantity;
+            let selectedStocks: Stock[] = [];
 
-        for (let stock of stocks) {
-            if (remainingQuantity <= 0) break;
+            for (let stock of stocks) {
+                if (remainingQuantity <= 0) break;
 
-            if (stock.stock >= remainingQuantity) {
-                selectedStocks.push({ ...stock, stock: remainingQuantity });
-                remainingQuantity = 0;
-            } else {
-                selectedStocks.push(stock);
-                remainingQuantity -= stock.stock;
+                if (stock.stock >= remainingQuantity) {
+                    selectedStocks.push({ ...stock, stock: remainingQuantity });
+                    stock.stock -= remainingQuantity;  // Update the stock
+                    remainingQuantity = 0;
+                } else {
+                    selectedStocks.push({ ...stock });
+                    remainingQuantity -= stock.stock;
+                    stock.stock = 0;  // All stock used
+                }
             }
-        }
 
-        if (remainingQuantity > 0) {
-            setError('Insufficient stock available.');
-            return;
-        }
+            if (remainingQuantity > 0) {
+                setError('Insufficient stock available.');
+                return;
+            }
 
-        if (selectedItem && quantity > 0) {
-            onAdd(selectedItem, quantity, selectedStocks);
-            setSelectedItem(null);
-            setQuantity(0);
-            setStocks([]);
-            setError(null);
+            if (selectedItem && quantity > 0) {
+                onAdd(selectedItem, quantity, selectedStocks);
+                setSelectedItem(null);
+                setQuantity(1);
+                setError(null);
+                setStocks([]);
+            } else if (quantity === 0) {
+                setError('Please add a quantity.');
+            }
         }
     };
 
@@ -81,20 +75,21 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ availableItems, onAdd, fetchI
     return (
         <div>
             <div className="flex mb-4 mt-6" id="addingItemToInvoice">
-                <div className="mr-2 w-1/2">
+                <div className="mr-2 min-w-96">
                     <SearchableDropdown
-                        options={availableItems.map(item => ({
-                            value: item.id,
-                            label: `${item.code} - ${item.name}`,
-                        }))}
+                        options={availableItems}
                         onChangeHandler={(selected) => {
-                            const item = availableItems.find(item => item.id === selected.value);
-                            setSelectedItem(item || null);
+                            const item = availableItems.find(item => item.value === selected?.value);
+                            setSelectedItem(item ? { id: item.value, code: item.code!, name: item.name! } : null);
                         }}
                         onInputChangeHandler={handleSearch}
+                        value={selectedItem ? {
+                            value: selectedItem.id,
+                            label: `${selectedItem.code} - ${selectedItem.name}`
+                        } : null}
                     />
                 </div>
-                <div className="mr-2 w-1/4">
+                <div className="mr-2">
                     <input
                         type="number"
                         min="1"
@@ -104,10 +99,10 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ availableItems, onAdd, fetchI
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                     />
                 </div>
-                <div className="w-1/4">
+                <div>
                     <button
                         onClick={handleAddItem}
-                        className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                        className="w-full text-white bg-blue-800 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded px-5 py-2.5 text-center dark:bg-blue-700 dark:hover:bg-blue-800 dark:focus:ring-blue-800"
                     >
                         Add Item
                     </button>

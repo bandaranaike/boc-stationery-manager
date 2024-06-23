@@ -1,15 +1,24 @@
 import React from 'react';
-import Select from 'react-select';
+import Select, { SingleValue } from 'react-select';
+import { DropdownOption } from '@/types';
 
-const SearchableDropdown = ({ options, onChangeHandler, onInputChangeHandler }) => {
+interface SearchableDropdownProps {
+    options: DropdownOption[];
+    onChangeHandler: (selectedOption: SingleValue<DropdownOption>) => void;
+    onInputChangeHandler: (inputValue: string) => void;
+    value: SingleValue<DropdownOption>;
+}
+
+const SearchableDropdown: React.FC<SearchableDropdownProps> = ({ options, onChangeHandler, onInputChangeHandler, value }) => {
     return (
         <Select
             options={options}
             onChange={onChangeHandler}
-            onInputChange={(inputValue) => onInputChangeHandler(inputValue)}
+            onInputChange={onInputChangeHandler}
             className="w-full"
             placeholder="Select an option"
             isSearchable
+            value={value}
             styles={{
                 control: (provided, state) => ({
                     ...provided,
@@ -29,6 +38,7 @@ const SearchableDropdown = ({ options, onChangeHandler, onInputChangeHandler }) 
                 input: (provided) => ({
                     ...provided,
                     color: '#e2e8f0',
+                    padding: '4px'
                 }),
                 placeholder: (provided) => ({
                     ...provided,

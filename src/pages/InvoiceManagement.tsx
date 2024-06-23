@@ -1,40 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
 import axios from 'axios';
 import BranchSelector from '../components/BranchSelector';
 import ItemTable from '../components/ItemTable';
 import AddItemForm from '../components/AddItemForm';
-
-interface Stock {
-    id: number;
-    item_id: number;
-    date: string;
-    unit_price: number;
-    stock: number;
-    initial_stock: number;
-}
-
-interface Item {
-    id: number;
-    code: string;
-    name: string;
-    quantity: number;
-    total_value: number;
-    stocks: Stock[];
-}
-
-interface Branch {
-    code: string;
-    accountNumber: string;
-}
+import { DropdownOption, Item, Stock } from "@/types";
 
 const InvoiceManagement: React.FC = () => {
     const [items, setItems] = useState<Item[]>([]);
-    const [availableItems, setAvailableItems] = useState<Item[]>([]);
-    const [branch, setBranch] = useState<Branch>({ code: '', accountNumber: '' });
-    const [branches, setBranches] = useState<{ value: string; label: string }[]>([]);
+    const [availableItems, setAvailableItems] = useState<DropdownOption[]>([]);
+    const [branch, setBranch] = useState<DropdownOption | null>(null);
+    const [branches, setBranches] = useState<DropdownOption[]>([]);
     const [grandTotal, setGrandTotal] = useState<number>(0);
+    const [error, setError] = useState<string | null>(null);
+    const [message, setMessage] = useState<string | null>(null);
 
     useEffect(() => {
         fetch('/api/branches')
@@ -42,87 +20,102 @@ const InvoiceManagement: React.FC = () => {
             .then((data) => {
                 const branchOptions = data.map((branch: any) => ({
                     value: branch.code,
+                    name: branch.name,
                     label: `${branch.code} - ${branch.name}`,
                 }));
                 setBranches(branchOptions);
             });
+        fetchItems('');
     }, []);
 
     const fetchItems = async (inputValue: string) => {
-        const response = await axios.get(`/api/items-search?text=${inputValue}`);
+        const response = await axios.get(`/api/itemsSearch?text=${inputValue}&availability=1`);
         const fetchedItems = response.data.map((item: any) => ({
-            id: item.id,
-            code: item.code,
-            name: item.name,
+            label: `${item.code} - ${item.name}`,
+            value: item.id,
         }));
         setAvailableItems(fetchedItems);
     };
 
-    const addItem = (item: Item, quantity: number, selectedStocks: Stock[]) => {
-        const newItems = selectedStocks.map((stock) => ({
+    const addItem = (item: Item, quantity: number, stocks: Stock[]) => {
+        const newItems = stocks.map((stock) => ({
             ...item,
             quantity: stock.stock,
             total_value: stock.unit_price * stock.stock,
             stocks: [stock],
         }));
 
+        resetMessages();
         setItems((prevItems) => [...prevItems, ...newItems]);
-        setGrandTotal((prevTotal) => prevTotal + newItems.reduce((sum, newItem) => sum + newItem.total_value, 0));
+        setGrandTotal((prevTotal) => prevTotal + newItems.reduce((sum, newItem) => sum + newItem.total_value!, 0));
     };
 
     const handleRemoveItem = (index: number) => {
-        const newItems = [...items];
-        setGrandTotal((prevTotal) => prevTotal - newItems[index].total_value);
-        newItems.splice(index, 1);
-        setItems(newItems);
+        if (index >= 0 && index < items.length) {
+            const newItems = [...items];
+            const itemToRemove = newItems[index];
+
+            if (itemToRemove) {
+                setGrandTotal((prevTotal) => prevTotal - itemToRemove.total_value!);
+                newItems.splice(index, 1);
+                setItems(newItems);
+            } else {
+                console.error(`Item at index ${index} is undefined.`);
+            }
+        } else {
+            console.error(`Index ${index} is out of bounds for items array.`);
+        }
     };
 
-    const handleBranchChange = (selectedOption: any) => {
-        setBranch((prevBranch) => ({ ...prevBranch, code: selectedOption.value }));
+    const handleBranchChange = (selectedOption: DropdownOption | null) => {
+        resetMessages();
+        setBranch(selectedOption);
     };
 
-    const handleGeneratePDF = () => {
-        const doc = new jsPDF();
-        doc.text('Central Province Office, Kandy', 10, 10);
-        doc.text('ADVICE OF DEBIT', 90, 20);
-        doc.text(`Branch Code: ${branch.code}`, 10, 30);
-        doc.text(`G/L Account No. ${branch.accountNumber}`, 10, 40);
-        doc.text('Stationery Charges for - 2024-06-09', 10, 50);
+    const resetMessages = () => {
+        setError(null);
+        setMessage(null);
+    }
 
-        const itemRows = items.map(item => [
-            item.code,
-            item.name,
-            item.quantity,
-            item.stocks.map(stock => stock.unit_price.toFixed(2)).join(', '),
-            item.total_value.toFixed(2),
-        ]);
-
-        doc.autoTable({
-            head: [['Code', 'Stationery', 'Qty', 'Unit Prices', 'Cost']],
-            body: itemRows,
-            startY: 60,
-        });
-
-        doc.text(`Grand Total: ${grandTotal.toFixed(2)}`, 10, doc.autoTable.previous.finalY + 10);
-        doc.text('..............................', 10, doc.autoTable.previous.finalY + 20);
-        doc.text('Authorized Officer', 10, doc.autoTable.previous.finalY + 30);
-
-        const date = new Date().toISOString().split('T')[0];
-        doc.save(`invoices/${branch.code}/${date}.pdf`);
+    const handleGeneratePDF = async () => {
+        if (!branch) {
+            setError('Please add a branch.');
+        } else if (!items.length) {
+            setError('Please add items to the invoice.');
+        } else {
+            setError(null);
+            try {
+                const response = await axios.post('/api/generatePdf', {
+                    items, branchName: branch?.name, branchCode: branch?.value
+                });
+                console.log(response.data.message); // PDF generated successfully
+                await axios.post('/api/updateStocks', {items});
+                setItems([]);
+                setBranch(null);
+                setGrandTotal(0);
+                setMessage("Successfully PDF file generated");
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+            }
+        }
     };
 
     return (
         <div className="p-4">
             <div className="flex justify-between">
                 <h1 className="text-2xl font-bold mb-4">Invoice Management</h1>
-                <BranchSelector branches={branches} onChange={handleBranchChange} />
+                <BranchSelector branches={branches} onChange={handleBranchChange} value={branch}/>
             </div>
-            <ItemTable items={items} onRemove={handleRemoveItem} />
-            <AddItemForm availableItems={availableItems} onAdd={addItem} fetchItems={fetchItems} />
-            <div className="text-right mb-4">
+            <ItemTable items={items} onRemove={handleRemoveItem}/>
+            <AddItemForm availableItems={availableItems} onAdd={addItem} fetchItems={fetchItems}/>
+            <div className="text-right my-4">
                 <strong>Grand Total: {grandTotal.toFixed(2)}</strong>
             </div>
-            <button onClick={handleGeneratePDF} className="bg-green-500 text-white p-2">Save and Generate PDF</button>
+            <button onClick={handleGeneratePDF} className="bg-green-700 text-white py-2 px-4 rounded">
+                Save and Generate PDF
+            </button>
+            {error && <p className="text-red-500 py-4">{error}</p>}
+            {message && <p className="text-green-500 py-4">{message}</p>}
         </div>
     );
 };

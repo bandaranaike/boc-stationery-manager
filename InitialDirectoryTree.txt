@@ -3,11 +3,14 @@
 │   ├── migration.sql
 │   └── stationery_stock.db
 ├── InitialDirectoryTree.txt
+├── invoices
+├── main.js
 ├── next.config.mjs
 ├── next-env.d.ts
 ├── package.json
 ├── package-lock.json
 ├── postcss.config.mjs
+├── preload.js
 ├── public
 │   ├── next.svg
 │   └── vercel.svg
@@ -20,21 +23,39 @@
 │   │   ├── layout.tsx
 │   │   └── page.tsx
 │   ├── components
+│   │   ├── AddBranchModal.tsx
+│   │   ├── AddItemForm.tsx
 │   │   ├── AddItemModal.tsx
 │   │   ├── AddStockModal.tsx
+│   │   ├── BranchSelector.tsx
+│   │   ├── BranchTable.tsx
+│   │   ├── DeleteBranchModal.tsx
+│   │   ├── EditBranchModal.tsx
+│   │   ├── ItemTable.tsx
+│   │   ├── SearchableDropdown.tsx
 │   │   └── TableComponent.tsx
-│   └── pages
-│       ├── api
-│       │   ├── add-stock.ts
-│       │   ├── database.ts
-│       │   ├── items-search.ts
-│       │   ├── items.ts
-│       │   ├── openDb.ts
-│       │   └── stocks.ts
-│       ├── backup.tsx
-│       ├── BranchManagement.tsx
-│       ├── InvoiceManagement.tsx
-│       ├── Settings.tsx
-│       └── StockManagement.tsx
+│   ├── pages
+│   │   ├── api
+│   │   │   ├── addItem.ts
+│   │   │   ├── addStock.ts
+│   │   │   ├── branches.ts
+│   │   │   ├── database.ts
+│   │   │   ├── generatePdf.ts
+│   │   │   ├── generateReport.ts
+│   │   │   ├── itemsSearch.ts
+│   │   │   ├── items.ts
+│   │   │   ├── stocks.ts
+│   │   │   └── updateStocks.ts
+│   │   ├── backup.tsx
+│   │   ├── BranchManagement.tsx
+│   │   ├── InvoiceManagement.tsx
+│   │   ├── Settings.tsx
+│   │   └── StockManagement.tsx
+│   ├── types
+│   ├── types.ts
+│   └── utils
+│       ├── dateUtils.ts
+│       ├── dbUtils.ts
+│       └── openDb.ts
 ├── tailwind.config.ts
 └── tsconfig.json

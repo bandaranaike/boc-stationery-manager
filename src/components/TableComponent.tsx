@@ -86,7 +86,7 @@ const TableComponent: React.FC<TableComponentProps> = ({reload}) => {
                 <tbody>
                 {items.map(item => (
                     <React.Fragment key={item.id}>
-                        <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                        <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 last:border-none">
                             <td className="px-6 py-4">{item.code}</td>
                             <td className="px-6 py-4">{item.name}</td>
                             <td className="px-6 py-4">{item.total_value}</td>
