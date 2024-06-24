@@ -77,7 +77,7 @@ export default function Home() {
             </li>
           </ul>
         </div>
-        <div className="p-4">{renderComponent()}</div>
+        <div className="p-6">{renderComponent()}</div>
       </main>
   );
 }

@@ -1,5 +1,6 @@
 import {NextApiRequest, NextApiResponse} from 'next';
 import openDb from '../../utils/openDb'
+import {updateItemTotals} from "@/utils/dbUtils";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const db = await openDb();
@@ -7,7 +8,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
         switch (req.method) {
             case 'GET':
-                const items = await db.all('SELECT id, code, name, total_value, total_stock, reorder_level, status FROM items');
+                const items = await db.all('SELECT id, code, name, total_value, total_stock, reorder_level, status FROM items ORDER BY code');
                 res.status(200).json(items);
                 break;
 
@@ -26,6 +27,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     return res.status(400).json({ message: 'ID, name, code, and reorder level are required' });
                 }
                 await db.run('UPDATE items SET name = ?, code = ?, reorder_level = ? WHERE id = ?', [newName, newCode, newReorderLevel, id]);
+
+                // If the reorder_level got changed, the status may be differed
+                await updateItemTotals(id);
+
                 res.status(200).json({ message: 'Item updated successfully' });
                 break;
 

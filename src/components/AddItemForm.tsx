@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import SearchableDropdown from '@/components/SearchableDropdown';
 import axios from 'axios';
-import { DropdownOption, Item, Stock } from '@/types';
+import {DropdownOption, Item, Stock} from '@/types';
+import {format} from "@/utils/utills";
 
 interface AddItemFormProps {
     availableItems: DropdownOption[];
@@ -9,7 +10,7 @@ interface AddItemFormProps {
     fetchItems: (inputValue: string) => void;
 }
 
-const AddItemForm: React.FC<AddItemFormProps> = ({ availableItems, onAdd, fetchItems }) => {
+const AddItemForm: React.FC<AddItemFormProps> = ({availableItems, onAdd, fetchItems}) => {
     const [selectedItem, setSelectedItem] = useState<Item | null>(null);
     const [quantity, setQuantity] = useState<number>(1);
     const [stocks, setStocks] = useState<Stock[]>([]);
@@ -41,11 +42,11 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ availableItems, onAdd, fetchI
                 if (remainingQuantity <= 0) break;
 
                 if (stock.stock >= remainingQuantity) {
-                    selectedStocks.push({ ...stock, stock: remainingQuantity });
+                    selectedStocks.push({...stock, stock: remainingQuantity});
                     stock.stock -= remainingQuantity;  // Update the stock
                     remainingQuantity = 0;
                 } else {
-                    selectedStocks.push({ ...stock });
+                    selectedStocks.push({...stock});
                     remainingQuantity -= stock.stock;
                     stock.stock = 0;  // All stock used
                 }
@@ -80,7 +81,8 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ availableItems, onAdd, fetchI
                         options={availableItems}
                         onChangeHandler={(selected) => {
                             const item = availableItems.find(option => option.value === selected?.value);
-                            setSelectedItem(item ? { id: item.id, code: item.code, name: item.name } : null);
+                            // @ts-ignore
+                            setSelectedItem(item ? {id: item.id, code: item.code, name: item.name} : null);
                         }}
                         onInputChangeHandler={handleSearch}
                         value={selectedItem ? {
@@ -112,7 +114,8 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ availableItems, onAdd, fetchI
             {stocks.length > 0 && (
                 <div className="overflow-x-auto shadow-md sm:rounded mt-4">
                     <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                        <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <thead
+                            className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
                             <th scope="col" className="px-6 py-3">Stock ID</th>
                             <th scope="col" className="px-6 py-3">Unit Price</th>
@@ -121,10 +124,11 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ availableItems, onAdd, fetchI
                         </thead>
                         <tbody>
                         {stocks.map((stock) => (
-                            <tr key={stock.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                            <tr key={stock.id}
+                                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 last:border-none">
                                 <td className="px-6 py-4">{stock.id}</td>
-                                <td className="px-6 py-4">{stock.unit_price.toFixed(2)}</td>
-                                <td className="px-6 py-4">{stock.stock}</td>
+                                <td className="px-6 py-4">{format(stock.unit_price)}</td>
+                                <td className="px-6 py-4">{format(stock.stock, 0)}</td>
                             </tr>
                         ))}
                         </tbody>

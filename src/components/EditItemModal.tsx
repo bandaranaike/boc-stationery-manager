@@ -13,9 +13,9 @@ const EditItemModal: React.FC<EditItemModalProps> = ({onItemEdited, item}) => {
     const {register, handleSubmit, reset} = useForm({
         defaultValues: {
             id: item.id,
-            name: item.name,
-            code: item.code,
-            reorder_level: item.reorder_level
+            newName: item.name,
+            newCode: item.code,
+            newReorderLevel: item.reorder_level
         }
     });
     const [isOpen, setIsOpen] = useState(false);
@@ -31,7 +31,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({onItemEdited, item}) => {
     const onSubmit = async (data: object) => {
         try {
             const response = await axios.put('/api/items', data);
-            if (response.data.success) {
+            if (response.status == 200) {
                 reset();
                 closeModal();
                 onItemEdited();
@@ -101,7 +101,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({onItemEdited, item}) => {
                                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                                                 Item name
                                             </label>
-                                            <input {...register('name')} id="name"
+                                            <input {...register('newName')} id="name"
                                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                                                    required/>
                                         </div>
@@ -110,7 +110,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({onItemEdited, item}) => {
                                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                                                 Item code
                                             </label>
-                                            <input {...register('code')} id="code"
+                                            <input {...register('newCode')} id="code"
                                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                                                    required/>
                                         </div>
@@ -119,7 +119,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({onItemEdited, item}) => {
                                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                                                 Reorder level
                                             </label>
-                                            <input {...register('reorder_level')} id="reorder_level"
+                                            <input {...register('newReorderLevel')} id="reorder_level"
                                                    type="number"
                                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                                                    required/>

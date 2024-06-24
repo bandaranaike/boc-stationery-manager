@@ -4,6 +4,7 @@ import BranchSelector from '../components/BranchSelector';
 import ItemTable from '../components/ItemTable';
 import AddItemForm from '../components/AddItemForm';
 import {DropdownOption, Item, Stock} from "@/types";
+import {format} from "@/utils/utills";
 
 const InvoiceManagement: React.FC = () => {
     const [items, setItems] = useState<Item[]>([]);
@@ -34,7 +35,7 @@ const InvoiceManagement: React.FC = () => {
             label: `${item.code} - ${item.name}`,
             value: item.id,
             id: item.id,
-            code: item.name,
+            code: item.code,
             name: item.name
         }));
         setAvailableItems(fetchedItems);
@@ -104,15 +105,15 @@ const InvoiceManagement: React.FC = () => {
     };
 
     return (
-        <div className="p-4">
+        <div>
             <div className="flex justify-between">
-                <h1 className="text-2xl font-bold mb-4">Invoice Management</h1>
+                <h2 className="text-3xl mb-6">Invoice Management</h2>
                 <BranchSelector branches={branches} onChange={handleBranchChange} value={branch}/>
             </div>
             <ItemTable items={items} onRemove={handleRemoveItem}/>
             <AddItemForm availableItems={availableItems} onAdd={addItem} fetchItems={fetchItems}/>
             <div className="text-right my-4">
-                <strong>Grand Total: {grandTotal.toFixed(2)}</strong>
+                <strong>Grand Total: {format(grandTotal)}</strong>
             </div>
             <button onClick={handleGeneratePDF} className="bg-green-700 text-white py-2 px-4 rounded">
                 Save and Generate PDF

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import {set} from "react-hook-form";
 
 interface Setting {
     id: number;
@@ -42,7 +43,7 @@ export default function Settings() {
                 {settings.map((setting) => (
                     <div key={setting.id}>
                         <label htmlFor={setting.name} className="block text-sm font-medium text-gray-300">
-                            {setting.name.replace(/([a-z])([A-Z])/g, '$1 $2')}
+                            {setting.name}
                         </label>
                         <input
                             type="text"
@@ -54,6 +55,7 @@ export default function Settings() {
                         />
                     </div>
                 ))}
+                {!settings.length && (<div className="p-8 text-xl text-gray-600">Settings will appear here</div>)}
             </div>
         </div>
     );

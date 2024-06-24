@@ -21,7 +21,11 @@ interface DropdownOption {
     label: string;
 }
 
-const AddStockModal: React.FC = () => {
+interface AddStockModalProps {
+    onStockAdded: () => void
+}
+
+const AddStockModal: React.FC<AddStockModalProps> = ({onStockAdded}) => {
     const {register, handleSubmit, reset, setValue} = useForm<FormData>();
     const [isOpen, setIsOpen] = useState(false);
     const [items, setItems] = useState<Item[]>([]);
@@ -65,6 +69,7 @@ const AddStockModal: React.FC = () => {
                 reset();
                 setSelectedItem(null);
                 closeModal();
+                onStockAdded();
             } else {
                 console.error('Failed to add stock:', response.data.error);
             }
@@ -145,7 +150,7 @@ const AddStockModal: React.FC = () => {
                                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                                                 Unit price
                                             </label>
-                                            <input {...register('unit_price')} id="unit_price"
+                                            <input {...register('unit_price')} id="unit_price" type="number" step="0.01"
                                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                                                    required/>
                                         </div>
@@ -154,7 +159,7 @@ const AddStockModal: React.FC = () => {
                                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                                                 Quantity
                                             </label>
-                                            <input {...register('quantity')} id="quantity"
+                                            <input {...register('quantity')} id="quantity" type="number" step="0.01"
                                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white mb-3"
                                                    required/>
                                         </div>

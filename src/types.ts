@@ -48,6 +48,8 @@ export interface Item {
     name: string;
     quantity?: number;
     total_value?: number;
+    total_stock: number;
     reorder_level?: number;
     stocks?: Stock[];
+    status: string;
 }

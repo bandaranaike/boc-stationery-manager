@@ -1,10 +1,11 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { jsPDF } from 'jspdf';
+import {NextApiRequest, NextApiResponse} from 'next';
+import {jsPDF} from 'jspdf';
 import 'jspdf-autotable';
 import fs from 'fs';
 import path from 'path';
-import formatDate from '../../utils/dateUtils'; // Make sure to create this utility function for date formatting
 import openDb from '../../utils/openDb';
+import {updateItemsStockDetails} from "@/pages/api/updateItemsStockDetails";
+import {format} from "@/utils/utills";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== 'POST') {
@@ -12,11 +13,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     try {
+        await updateItemsStockDetails();
+
         const db = await openDb();
         const items = await db.all('SELECT code, name, total_stock, total_value FROM items WHERE total_stock > 0');
 
         if (items.length === 0) {
-            return res.status(404).json({ message: 'No items found' });
+            return res.status(404).json({message: 'No items found'});
         }
 
         // Calculate the total value of all items
@@ -35,8 +38,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const itemRows = items.map(item => [
             item.code,
             item.name,
-            item.total_stock,
-            item.total_value.toFixed(2),
+            format(item.total_stock, 0),
+            format(item.total_value),
         ]);
 
         // @ts-ignore
@@ -44,25 +47,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             head: [['Code', 'Name', 'Total Stock', 'Total Value']],
             body: itemRows,
             startY: 40,
+            margin: {left: 10, right: 10, top: 0, bottom: 0},
         });
 
         // Add total value text
         // @ts-ignore
-        doc.text(`Stock total value: ${totalValue.toFixed(2)}`, 140, doc.autoTable.previous.finalY + 10);
+        doc.text(`Stock total value: ${format(totalValue)}`, 140, doc.autoTable.previous.finalY + 10);
 
         const directoryPath = path.join(process.cwd(), 'invoices', 'reports');
 
         // Ensure the directory exists
-        fs.mkdirSync(directoryPath, { recursive: true });
+        fs.mkdirSync(directoryPath, {recursive: true});
 
         const filePath = path.join(directoryPath, `${formattedDate}-${formattedTime}.pdf`);
         const pdfBuffer = doc.output('arraybuffer');
 
         fs.writeFileSync(filePath, Buffer.from(pdfBuffer));
 
-        res.status(200).json({ message: 'PDF generated successfully', filePath });
+        res.status(200).json({message: 'PDF generated successfully', filePath});
     } catch (error) {
         console.error('Error generating PDF:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).json({error: 'Internal Server Error'});
     }
 }

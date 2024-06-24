@@ -11,8 +11,8 @@ export async function updateItemTotals(itemId: number): Promise<{ totalValue: nu
         // Calculate total value and total stock in a single query using aggregation
         const result = await db.get(`
             SELECT
-                SUM(stocks.unit_price * stocks.stock) AS totalValue,
-                SUM(stocks.stock) AS totalStock
+                COALESCE(SUM(stocks.unit_price * stocks.stock), 0) AS totalValue,
+                COALESCE(SUM(stocks.stock), 0) AS totalStock
             FROM
                 stocks
             WHERE
@@ -27,7 +27,7 @@ export async function updateItemTotals(itemId: number): Promise<{ totalValue: nu
                  status      = CASE
                                    WHEN total_stock > reorder_level THEN 'active'
                                    ELSE 'order'
-                     END
+                               END
              WHERE id = ?`,
             [result.totalValue, result.totalStock, itemId]
         );

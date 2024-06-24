@@ -1,5 +1,6 @@
 import React from 'react';
 import { Item } from '@/types';
+import {format} from "@/utils/utills";
 
 interface ItemTableProps {
     items: Item[];
@@ -20,17 +21,17 @@ const ItemTable: React.FC<ItemTableProps> = ({ items, onRemove }) => {
                 </thead>
                 <tbody>
                 {items.map((item, index) => (
-                    <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                    <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 last:border-none">
                         <td className="px-6 py-4">{item.code} - {item.name}</td>
-                        <td className="px-6 py-4">{item.quantity}</td>
-                        <td className="px-6 py-4">{item.total_value?.toFixed(2)}</td>
+                        <td className="px-6 py-4">{format(item.quantity, 0)}</td>
+                        <td className="px-6 py-4">{format(item.total_value)}</td>
                         <td className="px-6 py-4">
                             <button onClick={() => onRemove(index)} className="text-red-500">Remove</button>
                         </td>
                     </tr>
                 ))}
                 {!items.length && (
-                    <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                    <tr className="bg-white dark:bg-gray-800">
                         <td colSpan={5} className="p-8 text-center">Please add items first</td>
                     </tr>
                 )}

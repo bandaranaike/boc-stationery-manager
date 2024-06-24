@@ -49,7 +49,7 @@ const DeleteItemModal: React.FC<DeleteItemModalProps> = ({ isOpen, closeModal, o
                             </div>
                             <div className="mt-2">
                                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                                    Are you sure you want to delete this branch? This action cannot be undone.
+                                    Are you sure you want to delete this ? This action cannot be undone.
                                 </p>
                             </div>
                             <div className="mt-4 flex justify-end">

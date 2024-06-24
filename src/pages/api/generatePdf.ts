@@ -4,6 +4,8 @@ import 'jspdf-autotable';
 import fs from 'fs';
 import path from 'path';
 import formatDate from "@/utils/dateUtils";
+import {updateItemsStockDetails} from "@/pages/api/updateItemsStockDetails";
+import {format} from "@/utils/utills";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {
@@ -26,9 +28,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const itemRows = items.map((item: any) => [
             item.code,
             item.name,
-            item.quantity,
-            item.stocks.map((stock: any) => stock.unit_price.toFixed(2)).join(', '),
-            item.total_value.toFixed(2),
+            format(item.quantity, 0),
+            item.stocks.map((stock: any) => format(stock.unit_price)).join(', '),
+            format(item.total_value),
         ]);
 
         // @ts-ignore
@@ -36,11 +38,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             head: [['Code', 'Stationery', 'Qty', 'Unit Prices', 'Cost']],
             body: itemRows,
             startY: 54,
+            margin: { left: 10, right: 10, top: 0, bottom: 0 },
         });
 
         const grandTotal = items.reduce((sum: number, item: any) => sum + item.total_value, 0);
         // @ts-ignore
-        doc.text(`Grand Total: ${grandTotal.toFixed(2)}`, 154, doc.autoTable.previous.finalY + 10);
+        doc.text(`Grand Total: ${format(grandTotal)}`, 150, doc.autoTable.previous.finalY + 10);
         // @ts-ignore
         doc.text('..............................', 10, doc.autoTable.previous.finalY + 40);
         // @ts-ignore
@@ -56,6 +59,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const pdfBuffer = doc.output('arraybuffer');
 
         fs.writeFileSync(filePath, Buffer.from(pdfBuffer));
+
+        await updateItemsStockDetails();
 
         res.status(200).json({message: 'PDF generated successfully', filePath});
     } catch (error) {
