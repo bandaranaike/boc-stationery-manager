@@ -48,11 +48,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             body: itemRows,
             startY: 40,
             margin: {left: 10, right: 10, top: 0, bottom: 0},
+            columnStyles: {
+                2: {halign: 'right'},
+                3: {halign: 'right'},
+            },
         });
 
         // Add total value text
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const text = `Stock total value: ${format(totalValue)}`;
+        const textWidth = doc.getTextWidth(text);
+        const xPosition = pageWidth - textWidth - 11; // Adjust position based on page width and margin
         // @ts-ignore
-        doc.text(`Stock total value: ${format(totalValue)}`, 140, doc.autoTable.previous.finalY + 10);
+        doc.text(text, xPosition, doc.autoTable.previous.finalY + 10);
 
         const directoryPath = path.join(process.cwd(), 'invoices', 'reports');
 

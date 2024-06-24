@@ -38,12 +38,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             head: [['Code', 'Stationery', 'Qty', 'Unit Prices', 'Cost']],
             body: itemRows,
             startY: 54,
-            margin: { left: 10, right: 10, top: 0, bottom: 0 },
+            margin: {left: 10, right: 10, top: 0, bottom: 0},
+            columnStyles: {
+                2: {halign: 'right'},
+                3: {halign: 'right'},
+                4: {halign: 'right'},
+            },
         });
 
         const grandTotal = items.reduce((sum: number, item: any) => sum + item.total_value, 0);
+
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const text = `Grand Total: ${format(grandTotal)}`;
+        const textWidth = doc.getTextWidth(text);
+        const xPosition = pageWidth - textWidth - 11; // Adjust position based on page width and margin
         // @ts-ignore
-        doc.text(`Grand Total: ${format(grandTotal)}`, 150, doc.autoTable.previous.finalY + 10);
+        doc.text(text, xPosition, doc.autoTable.previous.finalY + 10);
+
         // @ts-ignore
         doc.text('..............................', 10, doc.autoTable.previous.finalY + 40);
         // @ts-ignore
