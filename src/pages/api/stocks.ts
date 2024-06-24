@@ -51,8 +51,9 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
 
         try {
             await db.run('DELETE FROM stocks WHERE id = ?', [id]);
+            console.log("itemId", itemId)
             await updateItemTotals(itemId);
-            res.status(200).json({message: 'Stock deleted successfully'});
+            res.status(200).json({message: 'Stock deleted successfully' + itemId});
         } catch (error) {
             console.error(error);
             res.status(500).json({error: 'Failed to delete stock'});

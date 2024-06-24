@@ -13,35 +13,38 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 break;
 
             case 'POST':
-                const { name, code, reorder_level } = req.body;
+                const {name, code, reorder_level} = req.body;
                 if (!name || !code || reorder_level === undefined) {
-                    return res.status(400).json({ message: 'Name, code, and reorder level are required' });
+                    return res.status(400).json({message: 'Name, code, and reorder level are required'});
                 }
-                await db.run('INSERT INTO items (name, code, reorder_level) VALUES (?, ?, ?)', [name, code, reorder_level]);
-                res.status(201).json({ message: 'Item created successfully' });
+
+                const status = reorder_level > 0 ? 'order' : 'active';
+
+                await db.run('INSERT INTO items (name, code, reorder_level,status) VALUES (?, ?, ?, ?)', [name, code, reorder_level, status]);
+                res.status(201).json({message: 'Item created successfully'});
                 break;
 
             case 'PUT':
-                const { id, newName, newCode, newReorderLevel } = req.body;
+                const {id, newName, newCode, newReorderLevel} = req.body;
                 if (!id || !newName || !newCode || newReorderLevel === undefined) {
-                    return res.status(400).json({ message: 'ID, name, code, and reorder level are required' });
+                    return res.status(400).json({message: 'ID, name, code, and reorder level are required'});
                 }
                 await db.run('UPDATE items SET name = ?, code = ?, reorder_level = ? WHERE id = ?', [newName, newCode, newReorderLevel, id]);
 
                 // If the reorder_level got changed, the status may be differed
                 await updateItemTotals(id);
 
-                res.status(200).json({ message: 'Item updated successfully' });
+                res.status(200).json({message: 'Item updated successfully'});
                 break;
 
             case 'DELETE':
-                const { deleteId } = req.body;
+                const {deleteId} = req.body;
                 if (!deleteId) {
-                    return res.status(400).json({ message: 'ID is required' });
+                    return res.status(400).json({message: 'ID is required'});
                 }
                 await db.run('DELETE FROM items WHERE id = ?', [deleteId]);
                 await db.run('DELETE FROM stocks WHERE item_id = ?', [deleteId]);
-                res.status(200).json({ message: 'Item deleted successfully' });
+                res.status(200).json({message: 'Item deleted successfully'});
                 break;
 
             default:
@@ -50,7 +53,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).json({error: 'Internal Server Error'});
     } finally {
         await db.close();
     }

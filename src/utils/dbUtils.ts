@@ -10,29 +10,33 @@ export async function updateItemTotals(itemId: number): Promise<{ totalValue: nu
 
         // Calculate total value and total stock in a single query using aggregation
         const result = await db.get(`
-            SELECT
-                COALESCE(SUM(stocks.unit_price * stocks.stock), 0) AS totalValue,
-                COALESCE(SUM(stocks.stock), 0) AS totalStock
-            FROM
-                stocks
-            WHERE
-                stocks.item_id = ?
+            SELECT COALESCE(SUM(stocks.unit_price * stocks.stock), 0) AS totalValue,
+                   COALESCE(SUM(stocks.stock), 0)                     AS totalStock
+            FROM stocks
+            WHERE stocks.item_id = ?
         `, [itemId]);
 
         // Update the items table with the new totals
         await db.run(
             `UPDATE items
              SET total_value = ?,
-                 total_stock = ?,
-                 status      = CASE
-                                   WHEN total_stock > reorder_level THEN 'active'
-                                   ELSE 'order'
-                               END
+                 total_stock = ?
              WHERE id = ?`,
             [result.totalValue, result.totalStock, itemId]
         );
 
-        return { totalValue: result.totalValue, totalStock: result.totalStock };
+        // Update the items table with the new totals
+        await db.run(
+            `UPDATE items
+             SET status = CASE
+                              WHEN total_stock > reorder_level THEN 'active'
+                              ELSE 'order'
+                 END
+             WHERE id = ?`,
+            [itemId]
+        );
+
+        return {totalValue: result.totalValue, totalStock: result.totalStock};
     } catch (error) {
         console.error(error);
         throw new Error('Internal Server Error');
