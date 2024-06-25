@@ -38,7 +38,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({onItemAdded}) => {
         <>
             <button
                 onClick={openModal}
-                className="block ml-2 py-3 text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded text-sm px-5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                className="block ml-2 py-3 text-white bg-yellow-700 hover:bg-yellow-800 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded text-sm px-5 text-center dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-800"
                 type="button"
             >
                 Add item
@@ -109,7 +109,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({onItemAdded}) => {
                                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                                                 Reorder Level
                                             </label>
-                                            <input {...register('reorder_level')} id="reorder_level" type="number" step="0.01"
+                                            <input {...register('reorder_level')} id="reorder_level" type="number" step="0.01" autoComplete="off"
                                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                                                    required/>
                                         </div>

@@ -3,12 +3,14 @@ import EditItemModal from '@/components/EditItemModal';
 import DeleteItemModal from '@/components/DeleteItemModal';
 import {Item, Stock} from "@/types";
 import {format} from "@/utils/utills";
+import updateStocksAndItemTotals from "@/pages/api/updateStocks";
 
 interface TableComponentProps {
     reload: boolean;
+    stockAddedItemId: number;
 }
 
-const TableComponent: React.FC<TableComponentProps> = ({reload}) => {
+const TableComponent: React.FC<TableComponentProps> = ({reload, stockAddedItemId}) => {
     const [expandedRows, setExpandedRows] = useState<Record<number, boolean>>({});
     const [items, setItems] = useState<Item[]>([]);
     const [stocks, setStocks] = useState<Record<number, Stock[]>>({});
@@ -18,12 +20,13 @@ const TableComponent: React.FC<TableComponentProps> = ({reload}) => {
     const [stockToDelete, setStockToDelete] = useState<number | null>(null);
 
     useEffect(() => {
-        console.log("depends on working", reload)
         fetchItems();
-    }, [reload]);
+        if (stockAddedItemId > 0) {
+            fetchStocks(stockAddedItemId)
+        }
+    }, [reload, stockAddedItemId]);
 
     const fetchItems = async () => {
-        console.log("fetching items...")
         try {
             const response = await fetch('/api/items');
             if (!response.ok) {
