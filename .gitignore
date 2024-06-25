@@ -36,5 +36,7 @@ yarn-error.log*
 next-env.d.ts
 .idea/
 database/stationery_stock.db
+database/stationery_stock.db-*
+backups/
 dist/
 invoices/

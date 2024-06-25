@@ -28,7 +28,7 @@ const BranchTable: React.FC<BranchTableProps> = ({ branches, onEdit, onDelete })
                         <td className="px-6 py-3">{branch.code} - {branch.name}</td>
                         <td className="px-6 py-3">
                             <button onClick={() => onEdit(branch)} className="text-blue-500 mr-2">Edit</button>
-                            <button onClick={() => onDelete(branch.id)} className="text-red-500">Delete</button>
+                            {/*<button onClick={() => onDelete(branch.id)} className="text-red-500">Delete</button>*/}
                         </td>
                     </tr>
                 ))}

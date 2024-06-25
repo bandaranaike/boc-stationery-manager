@@ -3,6 +3,7 @@ import {Dialog, Transition} from '@headlessui/react';
 import {useForm, SubmitHandler} from 'react-hook-form';
 import axios from 'axios';
 import SearchableDropdown from "@/components/SearchableDropdown";
+import {DropdownOption} from "@/types";
 
 interface Item {
     id: number;
@@ -14,11 +15,6 @@ interface FormData {
     item: number;
     unit_price: number;
     quantity: number;
-}
-
-interface DropdownOption {
-    value: number;
-    label: string;
 }
 
 interface AddStockModalProps {
@@ -136,12 +132,17 @@ const AddStockModal: React.FC<AddStockModalProps> = ({onStockAdded}) => {
                                             </label>
                                             <SearchableDropdown
                                                 options={items.map(item => ({
+                                                    id: item.id,
                                                     value: item.id,
                                                     label: `${item.code} - ${item.name}`
                                                 }))}
                                                 onChangeHandler={handleSelectChange}
                                                 onInputChangeHandler={handleInputChange}
-                                                value={selectedItem}
+                                                value={selectedItem ? {
+                                                    id: selectedItem.id,
+                                                    value: selectedItem.value,
+                                                    label: `${selectedItem.code} - ${selectedItem.name}`
+                                                } : null}
                                             />
                                         </div>
 

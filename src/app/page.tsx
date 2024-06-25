@@ -6,7 +6,7 @@ import BranchManagement from "../pages/BranchManagement";
 import Settings from "../pages/Settings";
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState("StockManagement");
+  const [activeTab, setActiveTab] = useState("InvoiceManagement");
 
   const renderComponent = () => {
     switch (activeTab) {
@@ -16,8 +16,8 @@ export default function Home() {
         return <InvoiceManagement />;
       case "BranchManagement":
         return <BranchManagement />;
-      case "Settings":
-        return <Settings />;
+      // case "Settings":
+      //   return <Settings />;
       default:
         return null;
     }
@@ -63,18 +63,18 @@ export default function Home() {
                 Branch Management
               </button>
             </li>
-            <li className="me-2">
-              <button
-                  onClick={() => setActiveTab("Settings")}
-                  className={`inline-flex items-center justify-center p-4 border-b-2 ${
-                      activeTab === "Settings"
-                          ? "text-blue-600 border-blue-600 dark:text-blue-500 dark:border-blue-500"
-                          : "border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
-                  } rounded-t-lg`}
-              >
-                Settings
-              </button>
-            </li>
+            {/*<li className="me-2">*/}
+            {/*  <button*/}
+            {/*      onClick={() => setActiveTab("Settings")}*/}
+            {/*      className={`inline-flex items-center justify-center p-4 border-b-2 ${*/}
+            {/*          activeTab === "Settings"*/}
+            {/*              ? "text-blue-600 border-blue-600 dark:text-blue-500 dark:border-blue-500"*/}
+            {/*              : "border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"*/}
+            {/*      } rounded-t-lg`}*/}
+            {/*  >*/}
+            {/*    Settings*/}
+            {/*  </button>*/}
+            {/*</li>*/}
           </ul>
         </div>
         <div className="p-6">{renderComponent()}</div>

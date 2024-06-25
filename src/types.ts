@@ -13,7 +13,10 @@ export interface DropdownOption {
     label: string;
     code?: string;
     name?: string;
-    id?: number;
+    total_value?: number;
+    quantity?: number;
+    stocks?: Stock[];
+    id: number;
 }
 
 export interface DeleteBranchModalProps extends ModalProps {

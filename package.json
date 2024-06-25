@@ -4,6 +4,7 @@
   "private": true,
   "main": "main.js",
   "scripts": {
+    "prestart": "node backup.js",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -37,6 +38,7 @@
     "axios": "^1.7.2",
     "flowbite": "^2.3.0",
     "fs": "^0.0.1-security",
+    "fs-extra": "^11.2.0",
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.8.2",
     "next": "14.2.4",

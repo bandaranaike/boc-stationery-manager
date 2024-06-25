@@ -7,7 +7,7 @@ import { DropdownOption, Item, Stock } from "@/types";
 import { format } from "@/utils/utills";
 
 const InvoiceManagement: React.FC = () => {
-    const [items, setItems] = useState<Item[]>([]);
+    const [items, setItems] = useState<DropdownOption[]>([]);
     const [availableItems, setAvailableItems] = useState<DropdownOption[]>([]);
     const [branch, setBranch] = useState<DropdownOption | null>(null);
     const [branches, setBranches] = useState<DropdownOption[]>([]);
@@ -42,7 +42,7 @@ const InvoiceManagement: React.FC = () => {
         setAvailableItems(fetchedItems);
     };
 
-    const addItem = (item: Item, quantity: number, stocks: Stock[]) => {
+    const addItem = (item: DropdownOption, quantity: number, stocks: Stock[]) => {
         const newItems = stocks.map((stock) => ({
             ...item,
             quantity: stock.stock,

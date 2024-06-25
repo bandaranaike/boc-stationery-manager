@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import SearchableDropdown from '@/components/SearchableDropdown';
 import axios from 'axios';
-import { DropdownOption, Item, Stock } from '@/types';
+import { DropdownOption, Stock } from '@/types';
 import { format } from "@/utils/utills";
 
 interface AddItemFormProps {
     availableItems: DropdownOption[];
-    onAdd: (item: Item, quantity: number, stocks: Stock[]) => void;
+    onAdd: (item: DropdownOption, quantity: number, stocks: Stock[]) => void;
     fetchItems: (inputValue: string) => void;
     addedStocks: { [itemId: number]: Stock[] };
 }
 
 const AddItemForm: React.FC<AddItemFormProps> = ({ availableItems, onAdd, fetchItems, addedStocks }) => {
-    const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+    const [selectedItem, setSelectedItem] = useState<DropdownOption | null>(null);
     const [quantity, setQuantity] = useState<number>(1);
     const [stocks, setStocks] = useState<Stock[]>([]);
     const [error, setError] = useState<string | null>(null);
@@ -101,12 +101,12 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ availableItems, onAdd, fetchI
                         options={availableItems}
                         onChangeHandler={(selected) => {
                             const item = availableItems.find(option => option.value === selected?.value);
-                            // @ts-ignore
-                            setSelectedItem(item ? { id: item.id, code: item.code, name: item.name } : null);
+                            setSelectedItem(item || null); // Handle undefined case by setting to null
                         }}
                         onInputChangeHandler={handleSearch}
                         value={selectedItem ? {
-                            value: selectedItem.id,
+                            id: selectedItem.id,
+                            value: selectedItem.value,
                             label: `${selectedItem.code} - ${selectedItem.name}`
                         } : null}
                     />
@@ -134,7 +134,8 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ availableItems, onAdd, fetchI
             {stocks.length > 0 && (
                 <div className="overflow-x-auto shadow-md sm:rounded mt-4">
                     <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                        <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <thead
+                            className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
                             <th scope="col" className="px-6 py-3">Stock ID</th>
                             <th scope="col" className="px-6 py-3">Unit Price</th>
@@ -143,7 +144,8 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ availableItems, onAdd, fetchI
                         </thead>
                         <tbody>
                         {stocks.map((stock) => (
-                            <tr key={stock.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 last:border-none">
+                            <tr key={stock.id}
+                                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 last:border-none">
                                 <td className="px-6 py-4">{stock.id}</td>
                                 <td className="px-6 py-4">{format(stock.unit_price)}</td>
                                 <td className="px-6 py-4">{format(stock.stock, 0)}</td>

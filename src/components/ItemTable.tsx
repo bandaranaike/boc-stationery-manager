@@ -1,9 +1,9 @@
 import React from 'react';
-import { Item } from '@/types';
+import {DropdownOption, Item} from '@/types';
 import {format} from "@/utils/utills";
 
 interface ItemTableProps {
-    items: Item[];
+    items: DropdownOption[];
     onRemove: (index: number) => void;
 }
 

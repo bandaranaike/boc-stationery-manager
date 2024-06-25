@@ -154,13 +154,13 @@ const TableComponent: React.FC<TableComponentProps> = ({reload, stockAddedItemId
                             </td>
                             <td className="px-6 py-4 text-right flex space-x-2">
                                 <EditItemModal onItemEdited={itemEdited} item={item}></EditItemModal>
-                                <button
-                                    onClick={() => openDeleteModal(item.id)}
-                                    className="font-medium text-gray-600 dark:text-gray-400 hover:underline"
-                                >
-                                    Delete
-                                </button>
-                                {item.total_stock > 0 && (<button
+                                {/*<button*/}
+                                {/*    onClick={() => openDeleteModal(item.id)}*/}
+                                {/*    className="font-medium text-gray-600 dark:text-gray-400 hover:underline"*/}
+                                {/*>*/}
+                                {/*    Delete*/}
+                                {/*</button>*/}
+                                {item.total_stock != 0 && (<button
                                     onClick={() => handleRowClick(item.id)}
                                     className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                                 >
@@ -169,7 +169,7 @@ const TableComponent: React.FC<TableComponentProps> = ({reload, stockAddedItemId
 
                             </td>
                         </tr>
-                        {item.total_stock > 0 && expandedRows[item.id] && stocks[item.id] && (
+                        {item.total_stock != 0 && expandedRows[item.id] && stocks[item.id] && (
                             <tr className="bg-gray-50 dark:bg-gray-900">
                                 <td colSpan={6} className="p-2">
                                     <div className="relative overflow-x-auto shadow-md sm:rounded">
