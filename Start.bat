@@ -1,5 +1,4 @@
 @echo off
 cd /d "C:\StationeryManager"
-npm start
-timeout /t 5 /nobreak
+start cmd /k "npm start"
 start firefox http://localhost:3000

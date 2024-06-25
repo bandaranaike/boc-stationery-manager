@@ -1,6 +1,4 @@
 @echo off
-cd "C:\StationeryManager"
+cd /d "C:\StationeryManager"
 git pull
-npm install
-npm run build
-timeout /t 5 /nobreak
+npm install & npm run build
