@@ -1,16 +1,17 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import SearchableDropdown from '@/components/SearchableDropdown';
 import axios from 'axios';
-import {DropdownOption, Item, Stock} from '@/types';
-import {format} from "@/utils/utills";
+import { DropdownOption, Item, Stock } from '@/types';
+import { format } from "@/utils/utills";
 
 interface AddItemFormProps {
     availableItems: DropdownOption[];
     onAdd: (item: Item, quantity: number, stocks: Stock[]) => void;
     fetchItems: (inputValue: string) => void;
+    addedStocks: { [itemId: number]: Stock[] };
 }
 
-const AddItemForm: React.FC<AddItemFormProps> = ({availableItems, onAdd, fetchItems}) => {
+const AddItemForm: React.FC<AddItemFormProps> = ({ availableItems, onAdd, fetchItems, addedStocks }) => {
     const [selectedItem, setSelectedItem] = useState<Item | null>(null);
     const [quantity, setQuantity] = useState<number>(1);
     const [stocks, setStocks] = useState<Stock[]>([]);
@@ -25,7 +26,18 @@ const AddItemForm: React.FC<AddItemFormProps> = ({availableItems, onAdd, fetchIt
     const fetchStocks = async (itemId: number) => {
         try {
             const response = await axios.get(`/api/stocks?itemId=${itemId}`);
-            setStocks(response.data.sort((a: Stock, b: Stock) => new Date(a.date).getTime() - new Date(b.date).getTime()));
+            let fetchedStocks: Stock[] = response.data;
+
+            if (addedStocks[itemId]) {
+                addedStocks[itemId].forEach((addedStock) => {
+                    const index = fetchedStocks.findIndex(stock => stock.id === addedStock.id);
+                    if (index > -1) {
+                        fetchedStocks[index].stock -= addedStock.stock;
+                    }
+                });
+            }
+
+            setStocks(fetchedStocks.sort((a: Stock, b: Stock) => new Date(a.date).getTime() - new Date(b.date).getTime()));
         } catch (error) {
             console.error('Error fetching stocks:', error);
         }
@@ -38,17 +50,18 @@ const AddItemForm: React.FC<AddItemFormProps> = ({availableItems, onAdd, fetchIt
             let remainingQuantity = quantity;
             let selectedStocks: Stock[] = [];
 
-            for (let stock of stocks) {
+            // Copy stocks to prevent direct modification
+            let tempStocks = [...stocks];
+
+            for (let stock of tempStocks) {
                 if (remainingQuantity <= 0) break;
 
                 if (stock.stock >= remainingQuantity) {
-                    selectedStocks.push({...stock, stock: remainingQuantity});
-                    stock.stock -= remainingQuantity;  // Update the stock
+                    selectedStocks.push({ ...stock, stock: remainingQuantity });
                     remainingQuantity = 0;
                 } else {
-                    selectedStocks.push({...stock});
+                    selectedStocks.push({ ...stock });
                     remainingQuantity -= stock.stock;
-                    stock.stock = 0;  // All stock used
                 }
             }
 
@@ -57,12 +70,19 @@ const AddItemForm: React.FC<AddItemFormProps> = ({availableItems, onAdd, fetchIt
                 return;
             }
 
+            // Update the actual stocks only if sufficient stock is available
+            tempStocks.forEach((stock, index) => {
+                if (selectedStocks.some(selectedStock => selectedStock.id === stock.id)) {
+                    stocks[index].stock = stock.stock - selectedStocks.find(selectedStock => selectedStock.id === stock.id)!.stock;
+                }
+            });
+
             if (selectedItem && quantity > 0) {
                 onAdd(selectedItem, quantity, selectedStocks);
                 setSelectedItem(null);
                 setQuantity(1);
                 setError(null);
-                setStocks([]);
+                setStocks(tempStocks);  // Update stocks state with the modified stock quantities
             } else if (quantity === 0) {
                 setError('Please add a quantity.');
             }
@@ -82,7 +102,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({availableItems, onAdd, fetchIt
                         onChangeHandler={(selected) => {
                             const item = availableItems.find(option => option.value === selected?.value);
                             // @ts-ignore
-                            setSelectedItem(item ? {id: item.id, code: item.code, name: item.name} : null);
+                            setSelectedItem(item ? { id: item.id, code: item.code, name: item.name } : null);
                         }}
                         onInputChangeHandler={handleSearch}
                         value={selectedItem ? {
@@ -114,8 +134,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({availableItems, onAdd, fetchIt
             {stocks.length > 0 && (
                 <div className="overflow-x-auto shadow-md sm:rounded mt-4">
                     <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                        <thead
-                            className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
                             <th scope="col" className="px-6 py-3">Stock ID</th>
                             <th scope="col" className="px-6 py-3">Unit Price</th>
@@ -124,8 +143,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({availableItems, onAdd, fetchIt
                         </thead>
                         <tbody>
                         {stocks.map((stock) => (
-                            <tr key={stock.id}
-                                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 last:border-none">
+                            <tr key={stock.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 last:border-none">
                                 <td className="px-6 py-4">{stock.id}</td>
                                 <td className="px-6 py-4">{format(stock.unit_price)}</td>
                                 <td className="px-6 py-4">{format(stock.stock, 0)}</td>
