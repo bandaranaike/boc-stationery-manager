@@ -31,7 +31,7 @@ const InvoiceManagement: React.FC = () => {
     }, []);
 
     const fetchItems = async (inputValue: string) => {
-        const response = await axios.get(`/api/itemsSearch?text=${inputValue}&availability=1`);
+        const response = await axios.get(`/api/itemsSearch?text=${inputValue}&onlyAvailable=true`);
         const fetchedItems = response.data.map((item: any) => ({
             label: `${item.code} - ${item.name}`,
             value: item.id,

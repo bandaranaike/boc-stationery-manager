@@ -132,9 +132,11 @@ const AddStockModal: React.FC<AddStockModalProps> = ({onStockAdded}) => {
                                             </label>
                                             <SearchableDropdown
                                                 options={items.map(item => ({
-                                                    id: item.id,
+                                                    label: `${item.code} - ${item.name}`,
                                                     value: item.id,
-                                                    label: `${item.code} - ${item.name}`
+                                                    id: item.id,
+                                                    code: item.code,
+                                                    name: item.name
                                                 }))}
                                                 onChangeHandler={handleSelectChange}
                                                 onInputChangeHandler={handleInputChange}

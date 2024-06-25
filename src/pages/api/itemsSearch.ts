@@ -4,16 +4,19 @@ import openDb from '../../utils/openDb';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {
         const db = await openDb();
-        const { text = '', availability = 0 } = req.query;
+        const { text = '', onlyAvailable = 'false' } = req.query;
 
-        // Ensure availability is treated as a number
-        const availabilityNumber = parseInt(availability as string, 10);
+        // Build the query based on the onlyAvailable flag
+        const query = `
+            SELECT id, code, name 
+            FROM items 
+            WHERE (code LIKE ? OR name LIKE ?)
+            ${onlyAvailable === 'true' ? 'AND (total_stock > 0)' : ''}
+            ORDER BY code
+            LIMIT 20
+        `;
 
-        // Query the database for items matching the search text and with total_stock greater than the availability threshold
-        const items = await db.all(
-            'SELECT id, code, name FROM items WHERE (code LIKE ? OR name LIKE ?) AND (total_stock >= ?) LIMIT 20',
-            [`%${text}%`, `%${text}%`, availabilityNumber]
-        );
+        const items = await db.all(query, [`%${text}%`, `%${text}%`]);
 
         await db.close();
 
