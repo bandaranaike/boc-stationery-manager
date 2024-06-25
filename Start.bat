@@ -1,5 +1,5 @@
 @echo off
-cd /d "C:\Users\User\Documents\Projects\boc-stationery-manager"
-start npm run dev
+cd /d "C:\StationeryManager"
+npm start
 timeout /t 5 /nobreak
 start firefox http://localhost:3000
