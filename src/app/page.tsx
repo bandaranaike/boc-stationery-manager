@@ -6,7 +6,7 @@ import BranchManagement from "../pages/BranchManagement";
 import Settings from "../pages/Settings";
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState("InvoiceManagement");
+  const [activeTab, setActiveTab] = useState("StockManagement");
 
   const renderComponent = () => {
     switch (activeTab) {
