@@ -137,7 +137,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ availableItems, onAdd, fetchI
                         <thead
                             className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
-                            <th scope="col" className="px-6 py-3">Stock Date</th>
+                            <th scope="col" className="px-6 py-3">Stock ID</th>
                             <th scope="col" className="px-6 py-3">Unit Price</th>
                             <th scope="col" className="px-6 py-3">Available Quantity</th>
                         </tr>
@@ -146,7 +146,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ availableItems, onAdd, fetchI
                         {stocks.map((stock) => (
                             <tr key={stock.id}
                                 className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 last:border-none">
-                                <td className="px-6 py-4">{stock.date}</td>
+                                <td className="px-6 py-4">{stock.id}</td>
                                 <td className="px-6 py-4">{format(stock.unit_price)}</td>
                                 <td className="px-6 py-4">{format(stock.stock, 0)}</td>
                             </tr>

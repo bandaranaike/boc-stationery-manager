@@ -3,7 +3,7 @@ import axios from 'axios';
 import BranchSelector from '../components/BranchSelector';
 import ItemTable from '../components/ItemTable';
 import AddItemForm from '../components/AddItemForm';
-import { DropdownOption, Stock } from "@/types";
+import { DropdownOption, Item, Stock } from "@/types";
 import { format } from "@/utils/utills";
 
 const InvoiceManagement: React.FC = () => {
